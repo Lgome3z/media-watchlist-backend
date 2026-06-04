@@ -1,45 +1,41 @@
 const express = require('express');
 const cors = require('cors');
+
 const app = express();
 const PORT = 5001;
 
-// MIDDLEWARE (The server configuration filters)
-app.use(cors()); // Allows your React app to connect safely
-app.use(express.json()); // Allows the server to read JSON data sent by React
+// Middleware to allow your frontend to talk to the backend safely
+app.use(cors());
+app.use(express.json());
 
-// Our temporary backend "database" array
-let backendWatchlist = [
+// Your fully updated data array with all media categories matching the frontend exactly
+let watchlist = [
   { id: "1", title: "Inception", category: "Movie", status: "Watched" },
-  { id: "2", title: "Interstellar", category: "Movie", status: "Plan to Watch" }
+  { id: "2", title: "Interstellar", category: "Movie", status: "Want to Watch" },
+  { id: "3", title: "Edward Tulane", category: "Audiobook", status: "Want to Watch" },
+  { id: "4", title: "Project Hail Mary", category: "Soundtrack", status: "Watched" }
 ];
 
-// ==========================================
-// 1. GET ROUTE: Sends the entire list to React
-// ==========================================
+// 1. GET ROUTE: Sends the entire array back to your React frontend on load
 app.get('/api/watchlist', (req, res) => {
-  res.json(backendWatchlist);
+  res.json(watchlist);
 });
 
-// ==========================================
-// 2. POST ROUTE: Receives a new item and saves it
-// ==========================================
+// 2. POST ROUTE: Receives a new item from your frontend "Add" button and saves it
 app.post('/api/watchlist', (req, res) => {
-  const newItem = req.body; // Grabs the movie object sent by React
-  backendWatchlist.push(newItem); // Adds it to our server array
-  res.status(201).json(newItem); // Responds back saying "Success!"
+  const newItem = req.body;
+  watchlist.push(newItem); // Adds it to the server list
+  res.json(watchlist);    // Sends back the updated list so the screen updates instantly
 });
 
-// ==========================================
-// 3. DELETE ROUTE: Destroys an item by its ID
-// ==========================================
-app.delete('/api/watchlist/:id', (req, res) => {
-  const { id } = req.params; // Grabs the ID barcode out of the URL path
-  backendWatchlist = backendWatchlist.filter(item => item.id !== id);
-  res.json({ message: "Item successfully removed from server!" });
-});
-
-
-// STARTING THE ENGINE
+// Start the server listening on port 5001
 app.listen(PORT, () => {
-  console.log(`Backend server is firing on cylinders at http://localhost:${PORT}`);
+  console.log(`🚀 Backend server is running perfectly on http://localhost:${PORT}`);
+
+  app.delete('/api/watchlist/:id', (req, res) => {
+  const { id } = req.params;
+  // Filter out the item with the matching ID
+  watchlist = watchlist.filter(item => item.id !== id);
+  res.json(watchlist); // Send back the updated list
+});
 });
