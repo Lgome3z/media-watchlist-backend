@@ -28,6 +28,7 @@ app.post('/api/watchlist', (req, res) => {
   res.json(watchlist);    // Sends back the updated list so the screen updates instantly
 });
 
+
 // Start the server listening on port 5001
 app.listen(PORT, () => {
   console.log(`🚀 Backend server is running perfectly on http://localhost:${PORT}`);
